@@ -1,0 +1,54 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountNamePrefix": {
+      "type": "string",
+      "defaultValue": "danirivkinstor",
+      "metadata": {
+        "description": "Prefix for the storage accounts' names. Must be lowercase and 3-22 characters long."
+      },
+      "minLength": 3,
+      "maxLength": 22
+    }
+  },
+  "variables": {
+    "truncatedPrefix": "[substring(parameters('storageAccountNamePrefix'), 0, min(length(parameters('storageAccountNamePrefix')), 22))]",
+    "storageAccount1Name": "[concat(toLower(variables('truncatedPrefix')), '01')]",
+    "storageAccount2Name": "[concat(toLower(variables('truncatedPrefix')), '02')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-09-01",
+      "name": "[variables('storageAccount1Name')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-09-01",
+      "name": "[variables('storageAccount2Name')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {}
+    }
+  ],
+  "outputs": {
+    "storageAccount1Name": {
+      "type": "string",
+      "value": "[variables('storageAccount1Name')]"
+    },
+    "storageAccount2Name": {
+      "type": "string",
+      "value": "[variables('storageAccount2Name')]"
+    }
+  }
+}

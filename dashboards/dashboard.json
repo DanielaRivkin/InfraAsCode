@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dashboardName": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Portal/dashboards",
+      "apiVersion": "2019-01-01-preview",
+      "name": "[parameters('dashboardName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "lenses": {
+          "0": {
+            "order": 0,
+            "parts": {
+              "vmCpu": {
+                "position": {
+                  "x": 0,
+                  "y": 0,
+                  "rowSpan": 3,
+                  "colSpan": 3
+                },
+                "metadata": {
+                  "inputs": [
+                    {
+                      "name": "resourceId",
+                      "value": "/subscriptions/c5e5efcd-2381-4d20-96b4-f29afd8fbaaa/resourceGroups/MyResourceGroup/providers/Microsoft.Compute/virtualMachines/myWinSrvVM"
+                    }
+                  ],
+                  "type": "Extension/Microsoft_Azure_Monitoring/PartType/MetricsChartPart",
+                  "properties": {
+                    "title": "VM CPU Usage",
+                    "chartType": "line",
+                    "queries": [
+                      {
+                        "resourceId": "/subscriptions/c5e5efcd-2381-4d20-96b4-f29afd8fbaaa/resourceGroups/MyResourceGroup/providers/Microsoft.Compute/virtualMachines/myWinSrvVM",
+                        "metric": "Percentage CPU",
+                        "aggregation": "Average",
+                        "granularity": "PT1M",
+                        "filter": "",
+                        "timeContext": {
+                          "durationMs": 3600000,
+                          "timeRangeType": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange/TimeRange"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "metadata": {
+          "model": {
+            "timeRange": {
+              "value": {
+                "durationMs": 3600000
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+trigger:
+  branches:
+    include:
+      - main  # Adjust if you use a different branch
+
+variables:
+  resourceGroupName: 'MyResourceGroup'  # Change if needed
+  location: 'eastus'  # Adjust your Azure region
+  storageTemplate: 'MyArmTemplates/azuredeploy.json'
+  vmTemplate: 'MyArmTemplates/windows-vm.json'
+  vmParameters: 'MyArmTemplates/windows-vm.parameters.json'
+  azureServiceConnection: 'AzureDeploymentConnection'
+
+stages:
+- stage: DeployInfrastructure
+  displayName: 'Deploy Storage Accounts and Windows VM'
+  jobs:
+  
+  - job: DeployStorage
+    displayName: 'Deploy Storage Accounts'
+    pool:
+      name: 'MyNewSelfHostedPool'  # Ensure this agent pool exists
+    steps:
+    
+    - checkout: self
+
+    # Ensure the resource group exists
+    - task: AzureCLI@2
+      displayName: 'Ensure Resource Group Exists'
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'pscore'  # Changed from 'bash' to 'pscore' for Windows agents
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          if (-not (az group exists --name "$(resourceGroupName)")) {
+            Write-Output "Creating Resource Group: $(resourceGroupName)"
+            az group create --name "$(resourceGroupName)" --location "$(location)"
+          } else {
+            Write-Output "Resource Group $(resourceGroupName) already exists."
+          }
+
+    # Deploy storage accounts using the ARM template
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Deploy Storage Accounts'
+      inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: '$(azureServiceConnection)'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: '$(resourceGroupName)'
+        location: '$(location)'
+        templateLocation: 'Linked artifact'
+        csmFile: '$(storageTemplate)'
+        deploymentMode: 'Incremental'
+
+  - job: DeployVM
+    displayName: 'Deploy Windows VM'
+    pool:
+      name: 'MyNewSelfHostedPool'  # Ensure this agent pool exists
+    steps:
+    
+    - checkout: self
+
+    # Deploy the Windows VM using the ARM template
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Deploy Windows VM'
+      inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: '$(azureServiceConnection)'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: '$(resourceGroupName)'
+        location: '$(location)'
+        templateLocation: 'Linked artifact'
+        csmFile: '$(vmTemplate)'
+        csmParametersFile: '$(vmParameters)'
+        deploymentMode: 'Incremental'
