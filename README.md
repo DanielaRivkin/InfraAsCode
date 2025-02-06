@@ -81,16 +81,7 @@ C. Deploying the Dashboard:
 - **Azure Portal Verification:**  
   Open MyMonitoringDashboard under the Dashboards section in the Azure Portal to visually inspect the metric charts.
 
-6. Troubleshooting
-------------------
-- If a dashboard tile shows "An incomplete query has been provided," check that the query properties
-  (resource ID, metric name, aggregation, granularity, filter, etc.) are correctly defined.
-- Adjust the dashboard time range using the time picker if no data appears.
-- Use the browser’s Developer Tools (F12) to inspect for module load or network errors.
-- Compare your dashboard tile configuration with one manually created in the portal for differences.
-- Clear browser cache or use an incognito window if browser extensions interfere.
-
-7. References
+6. References
 -------------
 - Azure CLI Documentation: https://learn.microsoft.com/cli/azure/monitor/metrics?view=azure-cli-latest
 - Create and Manage Azure Dashboards: https://learn.microsoft.com/azure/azure-portal/azure-portal-dashboards
