@@ -98,5 +98,4 @@ C. Deploying the Dashboard:
 
 ---
 
-This README explains the project, how to deploy it, and how to verify its functionality. Customize it as needed before sharing it with your interview team.
  
